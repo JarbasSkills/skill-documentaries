@@ -1,0 +1,11 @@
+[Desktop Entry]
+X-DBUS-StartupType=None
+X-KDE-StartupNotify=false
+Version=1.0
+Terminal=false
+Type=Application
+Name=r/Documentaries
+Exec=mycroft-gui-app --hideTextInput --skill=skill-documentaries.jarbasskills.home
+Icon=documentaries_icon
+Categories=VoiceApp
+StartupNotify=false

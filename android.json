@@ -1,0 +1,5 @@
+{
+    "android_icon": "/res/icon/documentaries_icon.png",
+    "android_name": "Horror Documentaries",
+    "android_handler": "skill-documentaries.jarbasskills.home"
+}
