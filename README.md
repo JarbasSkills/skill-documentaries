@@ -1,4 +1,4 @@
-# <img src='./res/icon/documentaries_icon.png' card_color='#40DBB0' width='50' height='50' style='vertical-align:bottom'/>r/DocumentariesSkill
+# r/DocumentariesSkill
 
 ![](./res/documentaries_logo.png)
 
