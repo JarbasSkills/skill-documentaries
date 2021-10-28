@@ -1,6 +1,5 @@
 from os.path import join, dirname
 
-import bs4
 from ovos_plugin_common_play.ocp import MediaType, PlaybackType
 from ovos_utils.parse import fuzzy_match, MatchStrategy
 from ovos_workshop.skills.common_play import OVOSCommonPlaybackSkill, \
@@ -26,6 +25,22 @@ class DocumentariesSkill(OVOSCommonPlaybackSkill):
         if "praw_secret" not in self.settings:
             self.settings["praw_secret"] = "7Hib7ujbWsrmzvgw93woBQ923w0"
 
+        if self.settings.get("praw_secret") and \
+                self.settings.get("praw_client"):
+            self.reddit = RedditDocumentaries(
+                client=self.settings["praw_client"],
+                secret=self.settings["praw_secret"])
+        else:
+            self.reddit = RedditDocumentaries()
+
+    def initialize(self):
+        self.schedule_event(self._scrap_reddit, 1)
+
+    def _scrap_reddit(self, message=None):
+        for v in self.reddit.scrap():
+            pass  # TODO Some validation ?
+        self.schedule_event(self._scrap_reddit, 3600)  # repeat every hour
+
     def calc_score(self, phrase, match, base_score=0):
         # check for forbidden words in title
         if self.voc_match(match["title"].lower(), "blacklist"):
@@ -49,13 +64,8 @@ class DocumentariesSkill(OVOSCommonPlaybackSkill):
     @ocp_search()
     def search_reddit(self, phrase, media_type):
         base_score, phrase = self.parse_media_type(phrase, media_type)
-        if self.settings.get("praw_secret") and self.settings.get("praw_client"):
-            r = RedditDocumentaries(client=self.settings["praw_client"],
-                                    secret=self.settings["praw_secret"])
-        else:
-            r = RedditDocumentaries()
-
-        for v in r.scrap():
+        # search cached documentary database (updated hourly)
+        for v in self.reddit.get_cached_entries():
             score = self.calc_score(phrase, v, base_score=base_score)
             if score < 20:
                 continue

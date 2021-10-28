@@ -1,2 +1,2 @@
 ovos_workshop>=0.0.5a1
-reddit_movies
+reddit_movies>=0.0.2
