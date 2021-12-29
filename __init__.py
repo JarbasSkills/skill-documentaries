@@ -3,7 +3,7 @@ from os.path import join, dirname
 from ovos_plugin_common_play.ocp import MediaType, PlaybackType
 from ovos_utils.parse import fuzzy_match, MatchStrategy
 from ovos_workshop.skills.common_play import OVOSCommonPlaybackSkill, \
-    ocp_search
+    ocp_search, ocp_featured_media
 from reddit_movies import RedditDocumentaries
 
 
@@ -67,7 +67,7 @@ class DocumentariesSkill(OVOSCommonPlaybackSkill):
         # search cached documentary database (updated hourly)
         for v in self.reddit.get_cached_entries():
             score = self.calc_score(phrase, v, base_score=base_score)
-            if score < 20:
+            if score < 50:
                 continue
             # return as a video result (single track dict)
             yield {
@@ -83,6 +83,20 @@ class DocumentariesSkill(OVOSCommonPlaybackSkill):
                 "skill_id": self.skill_id
             }
 
+    @ocp_featured_media()
+    def featured_media(self):
+        return [{
+            "match_confidence": 50,
+            "media_type": MediaType.DOCUMENTARY,
+            #  "length": v.length * 1000,
+            "uri": "youtube//" + v["url"],
+            "playback": PlaybackType.VIDEO,
+            "image": v.get("thumbnail") or self.skill_icon,
+            "bg_image": v.get("thumbnail") or self.skill_icon,
+            "skill_icon": self.skill_icon,
+            "title": v["title"],
+            "skill_id": self.skill_id
+        } for v in self.reddit.get_cached_entries()]
 
 def create_skill():
     return DocumentariesSkill()
