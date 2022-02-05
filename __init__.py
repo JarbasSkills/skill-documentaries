@@ -17,7 +17,9 @@ class DocumentariesSkill(OVOSCommonPlaybackSkill):
         self.playback_type = PlaybackType.VIDEO
         self.supported_media = [MediaType.DOCUMENTARY,
                                 MediaType.VIDEO]
+        self.reddit = RedditDocumentaries()
 
+    def initialize(self):
         # get your own keys! these might stop working any time
         if "praw_client" not in self.settings:
             self.settings["praw_client"] = "Cij47m8Dg6dSIA"
@@ -29,10 +31,7 @@ class DocumentariesSkill(OVOSCommonPlaybackSkill):
             self.reddit = RedditDocumentaries(
                 client=self.settings["praw_client"],
                 secret=self.settings["praw_secret"])
-        else:
-            self.reddit = RedditDocumentaries()
 
-    def initialize(self):
         self.schedule_event(self._scrap_reddit, 1)
 
     def _scrap_reddit(self, message=None):
